@@ -1,6 +1,6 @@
 #r-multired
 
-This is an R implementation of KatolaZ's [multired-0.1](https://github.com/KatolaZ/multired) algorithm for structural reduction of multi-layer networks based on the Von Neumann Entropy and on the Quantum Jensen-Shannon divergence of graphs, as explained in:
+This is a R implementation of KatolaZ's [multired-0.1](https://github.com/KatolaZ/multired) algorithm for structural reduction of multi-layer networks based on the Von Neumann Entropy and on the Quantum Jensen-Shannon divergence of graphs, as explained in:
 
   M. De Domenico. V. Nicosia, A. Arenas, V. Latora
   "Structural reducibility of multilayer networks", 
