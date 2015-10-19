@@ -5,7 +5,6 @@ Version: 0.1
 Date: 2015-10-16
 Authors@R: person("Jonathan", "Silva", email = "jonathancardos@gmail.com",
                   role = c("aut", "cre"))
-Maintainer: jonathancardos@gmail.com
 Description: Algorithm for structural reduction of multi-layer networks based on the Von Neumann Entropy and 
     on the Quantum Jensen-Shannon divergence of graphs
 License: GPLv3

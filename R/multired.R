@@ -50,12 +50,12 @@ read_multilayer <- function(filename, n, networkName=NULL) {
 }
 
 #' @export
-print <- function(x){
+print <- function(x,...){
   UseMethod("print",x)
 }
 
 #' @export
-print.multilayer <- function(m) {
+print.multilayer <- function(m,...) {
     invisible(cat(sprintf("Multilayer network %s\n Nodes = %d\n Layers = %d\n", 
                           ifelse(is.null(m$name), ":", m$name), m$n, m$noLayers)))
 }
