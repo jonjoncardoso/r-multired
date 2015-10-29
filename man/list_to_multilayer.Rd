@@ -6,6 +6,13 @@
 \usage{
 list_to_multilayer(l, n, networkName = NULL)
 }
+\arguments{
+\item{l}{list of matrices}
+
+\item{n}{number of nodes in the network}
+
+\item{networkName}{name of the network (optional)}
+}
 \description{
 Each position in the list must be a n x n matrix
 }

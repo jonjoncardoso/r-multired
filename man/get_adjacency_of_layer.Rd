@@ -4,11 +4,10 @@
 \alias{get_adjacency_of_layer}
 \title{Adjacency matrix of one or more layers}
 \usage{
-get_adjacency_of_layer(layerIds, m)
+get_adjacency_of_layer(layerId, m)
 }
 \arguments{
-\item{layerIds}{An integer or a vector, identifying one or more layerID of the network.
-If layerIds is a vector, the layers will be aggregated.}
+\item{layerId}{An integer identifying one layer of the network.}
 
 \item{m}{A multilayer object}
 }
@@ -16,8 +15,6 @@ If layerIds is a vector, the layers will be aggregated.}
 A \code{\link[Matrix]{Matrix}} object
 }
 \description{
-The function will return the adjacency matrix of one or more layers of the multilayer network,
- if more than one layerID is passed, the function will aggregate the layers,
- summing the weights of the links.
+The function will return the adjacency matrix of one layer of the multilayer network
 }
 

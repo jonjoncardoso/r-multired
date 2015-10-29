@@ -4,7 +4,12 @@
 \alias{compute_JSD_matrix}
 \title{Computes Jensen-Shannon matrix}
 \usage{
-compute_JSD_matrix(m)
+compute_JSD_matrix(m, verbose = FALSE)
+}
+\arguments{
+\item{m}{multilayer network}
+
+\item{verbose}{if TRUE, outputs progress text and bars}
 }
 \description{
 Computes Jensen-Shannon matrix

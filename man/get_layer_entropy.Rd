@@ -2,7 +2,7 @@
 % Please edit documentation in R/multired.R
 \name{get_layer_entropy}
 \alias{get_layer_entropy}
-\title{Adjacency matrix of one or more layers}
+\title{Entropy of an adjacency matrix}
 \usage{
 get_layer_entropy(A)
 }
@@ -13,8 +13,6 @@ get_layer_entropy(A)
 The entropy of the adjacency matrix.
 }
 \description{
-The function will return the adjacency matrix of one or more layers of the multilayer network,
- if more than one layerID is passed, the function will aggregate the layers,
- summing the weights of the links.
+Entropy of an adjacency matrix
 }
 

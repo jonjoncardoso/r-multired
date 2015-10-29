@@ -53,7 +53,9 @@ read_multilayer <- function(filename, n, networkName=NULL) {
 #' Converts a List of Matrix to Data frame
 #' 
 #' Each position in the list must be a n x n matrix
-#' 
+#' @param l list of matrices
+#' @param n number of nodes in the network
+#' @param networkName name of the network (optional)
 #' @export
 list_to_multilayer <- function(l, n, networkName=NULL){
   multilayer <- list()
@@ -71,9 +73,15 @@ list_to_multilayer <- function(l, n, networkName=NULL){
   multilayer
 }
 
+#' @param x
 #' @export
-print <- function(x,...){
-  UseMethod("print",x)
+print <- function(m,...){
+  UseMethod("print",m)
+}
+
+#' @export
+print.default <- function(m,...){
+  base::print(m,...)
 }
 
 #' @export
@@ -86,13 +94,10 @@ print.multilayer <- function(m,...) {
 
 #' Adjacency matrix of one or more layers
 #' 
-#' The function will return the adjacency matrix of one or more layers of the multilayer network, 
-#'  if more than one layerID is passed, the function will aggregate the layers, 
-#'  summing the weights of the links.
+#' The function will return the adjacency matrix of one layer of the multilayer network
 #'  
 #' 
-#' @param layerIds An integer or a vector, identifying one or more layerID of the network. 
-#' If layerIds is a vector, the layers will be aggregated.
+#' @param layerId An integer identifying one layer of the network.
 #' @param m A multilayer object
 #' @return A \code{\link[Matrix]{Matrix}} object
 #' @export
@@ -119,13 +124,8 @@ get_adjacency_of_layer <- function(layerId,m){
     }  
 } 
 
-#' Adjacency matrix of one or more layers
-#' 
-#' The function will return the adjacency matrix of one or more layers of the multilayer network, 
-#'  if more than one layerID is passed, the function will aggregate the layers, 
-#'  summing the weights of the links.
+#' Entropy of an adjacency matrix
 #'  
-#' 
 #' @param A adjacency matrix.
 #' @return The entropy of the adjacency matrix.
 #' @export
@@ -139,6 +139,9 @@ get_layer_entropy <- function(A){
   
 }
 
+#' Calculates entropy of multilayer network
+#' 
+#' @param m multilayer network
 #' @export
 get_entropy <- function(m){
   if(!inherits(m,"multilayer")){
@@ -149,6 +152,7 @@ get_entropy <- function(m){
 
 #' Entropy of the aggregation of all layers
 #' 
+#' @param m multilayer network
 #' @export
 get_agg_entropy <- function(m){
   if(!inherits(m,"multilayer")){
@@ -159,19 +163,32 @@ get_agg_entropy <- function(m){
 }
 
 #' Computes Jensen-Shannon matrix
-#'  @export
-compute_JSD_matrix <- function(m){
+#' @param m multilayer network 
+#' @param verbose if TRUE, outputs progress text and bars
+#' @export
+compute_JSD_matrix <- function(m,verbose=FALSE){
   if(!inherits(m,"multilayer")){
     stop("m must be a multilayer object.")
   }
   allComb <- t(combn(m$noLayers,2))
   JSD <- Matrix(0,m$noLayers,m$noLayers)
+  if(verbose){
+    cat("Computing JSD Matrix ...\n")
+    pb <- txtProgressBar(0,max=nrow(allComb),style=3)
+  }
+    
   for(idx in 1:nrow(allComb)){
     i <- allComb[idx,1]
     j <- allComb[idx,2]
     aggr <- (m$adjacencies[[i]] + m$adjacencies[[j]])/2
     JSD[i,j] <- sqrt(get_layer_entropy(aggr) - 0.5*(get_layer_entropy(m$adjacencies[[i]]) + get_layer_entropy(m$adjacencies[[j]])))
     JSD[j,i] <- JSD[i,j]
+    if(verbose){
+      setTxtProgressBar(pb,idx)
+    }
+  }
+  if(verbose){
+    cat("... done.\n")
   }
   JSD
 }
@@ -198,25 +215,47 @@ get_relative_entropy <- function(reducedM,aggEntropy){
 #' \code{find_reduced} is the main function of this package. 
 #' It reduces the multilayer network passed as an argument (\code{m}) and  
 #' 
+#' @param m multilayer network
+#' @param verbose if TRUE, outputs progress text and bars
 #' @export
 #' @examples
 #' \dontrun{
 #' m <- read_multilayer("test.txt")
 #' find_reduced(m)
 #' }
-find_reduced <- function(m){
+find_reduced <- function(m,verbose=TRUE){
   if(!inherits(m,"multilayer")){
     stop("m must be a multilayer object.")
   }
+  if(verbose){
+    cat("Computing aggregated network and its entropy ...")
+  }
   aggEntropy <- get_agg_entropy(m)
+  if(verbose){
+    cat(" done.\n")
+  }
+  JSD <- as.dist(compute_JSD_matrix(m,verbose))
   
-  merges <- hclust(as.dist(compute_JSD_matrix(m)),method="ward.D2")$merge
+  if(verbose){
+    cat("Performing hierarchical clustering ... ")
+  }
+  merges <- hclust(JSD,method="ward.D2")$merge
+  if(verbose){
+    cat(" done.\n")
+  }
   noMerges <- nrow(merges)
   
-  qVals <- vector(mode="numeric",length=noMerges)
+  maxQ <- 0
+  optimalReduced <- m
+  
+  #Auxiliar vectors
   adjMerges <- vector(mode="list",length=noMerges-1)
-  currMultilayer <- m$adjacencies
   merged <- vector(mode="logical",length=m$noLayers)
+  
+  if(verbose){
+    cat("Calculating maximum cut of dendrogram ...\n")
+    pb <- txtProgressBar(0,max=noMerges,style=3)
+  }
   
   #Evaluate all merges
   for(i in 1:noMerges){
@@ -236,8 +275,18 @@ find_reduced <- function(m){
     currMultilayer <- Reduce(append,m$adjacencies[which(!merged)],adjMerges[1:i])
     
     reducedM <- list_to_multilayer(currMultilayer,m$n,m$name)
-    qVals[i] <- get_relative_entropy(reducedM,aggEntropy)
+    q <- get_relative_entropy(reducedM,aggEntropy)
+    if(q > maxQ){
+      maxQ <- q
+      optimalReduced <- reducedM
+    }
+    if(verbose){
+      setTxtProgressBar(pb,i)
+    }
   }
-  qVals
+  if(verbose){
+    cat(" done.\n")
+  }
+  optimalReduced
 }
 

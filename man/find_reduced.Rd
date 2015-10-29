@@ -4,7 +4,12 @@
 \alias{find_reduced}
 \title{Find the reduced multilayer network}
 \usage{
-find_reduced(m)
+find_reduced(m, verbose = TRUE)
+}
+\arguments{
+\item{m}{multilayer network}
+
+\item{verbose}{if TRUE, outputs progress text and bars}
 }
 \description{
 \code{find_reduced} is the main function of this package.
