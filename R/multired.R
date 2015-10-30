@@ -73,7 +73,10 @@ list_to_multilayer <- function(l, n, networkName=NULL){
   multilayer
 }
 
-#' @param x
+#' Print an object
+#' 
+#' @name print
+#' @param x object
 #' @export
 print <- function(m,...){
   UseMethod("print",m)
