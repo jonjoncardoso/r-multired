@@ -9,3 +9,11 @@ This is a R implementation of KatolaZ's [multired-0.1](https://github.com/Katola
 If you happen to find any use of this code please do not forget to cite that paper ;-)
 
 This project is under license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
+
+## Install
+
+Install `multired` with devtools:
+
+```
+devtools::install_github("jonathancardoso/r-multired")
+```
