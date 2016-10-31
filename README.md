@@ -15,5 +15,5 @@ This project is under license [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
 Install `multired` with devtools:
 
 ```
-devtools::install_github("jonathancardoso/r-multired")
+devtools::install_github("jon-c-silva/r-multired")
 ```
